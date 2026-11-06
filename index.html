@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M1: The tuner and the detector | Team 8 Radio Guide</title>
+<meta name="description" content="How Team 8 built, predicted and measured a tuned circuit and an envelope detector for a medium-wave radio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f5;--card:#f9fbfc;--ink:#14202b;--mute:#566574;--line:#cfd8e0;--acc:#00727f;--accbg:#dceef0;--grid:rgba(20,32,43,.06)}
+@media (prefers-color-scheme:dark){:root{--bg:#0d151d;--card:#131e28;--ink:#e6edf2;--mute:#97a6b3;--line:#27384a;--acc:#4fd1e0;--accbg:#12313a;--grid:rgba(230,237,242,.05)}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 "Instrument Sans",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:Newsreader,Georgia,serif;font-weight:500;line-height:1.15;margin:0}
+h1{font-size:clamp(2.4rem,6vw,4.2rem);letter-spacing:-.02em}
+h2{font-size:clamp(1.7rem,3.5vw,2.3rem);margin-bottom:.6rem}
+h3{font-size:1.3rem;margin-bottom:.3rem}
+p{margin:0 0 1rem;max-width:68ch}
+a{color:var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:3px}
+.wrap{max-width:980px;margin:0 auto;padding:0 22px}
+nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:22px;height:56px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+nav b{font-weight:600;margin-right:auto}
+nav a{color:var(--mute);text-decoration:none;font-size:.92rem;padding:4px 0;border-bottom:2px solid transparent}
+nav a.on{color:var(--ink);border-color:var(--acc)}
+nav span{color:var(--mute);opacity:.5;font-size:.92rem}
+.hero{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px;border-bottom:1px solid var(--line);padding:64px 0 40px}
+.hero p.lead{font-size:1.2rem;color:var(--mute);margin-top:1.1rem}
+.scope{margin-top:34px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.scope canvas{width:100%;height:150px;display:block}
+.dial{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center;margin-top:12px}
+.dial label{font-weight:500}
+.dial input{flex:1 1 240px;accent-color:var(--acc);height:28px}
+.read{font-size:1.05rem}
+.read b{font-size:1.5rem;font-weight:600;color:var(--acc)}
+.band{position:relative;height:6px;border-radius:3px;background:var(--line);margin:22px 0 6px}
+.band i{position:absolute;top:-5px;width:4px;height:16px;border-radius:2px;background:var(--acc);transition:left .08s}
+.band u{position:absolute;top:-3px;width:2px;height:12px;background:var(--mute);text-decoration:none}
+.ends{display:flex;justify-content:space-between;font-size:.85rem;color:var(--mute)}
+.hint{font-size:.9rem;color:var(--mute);margin:.6rem 0 0}
+section{padding:72px 0 8px}
+.sub{color:var(--mute);font-size:1.05rem}
+.eq{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:6px;padding:14px 18px;margin:1.2rem 0;font-family:Newsreader,Georgia,serif;font-size:1.25rem;overflow-x:auto;max-width:100%}
+.eq small{display:block;font:.9rem "Instrument Sans",sans-serif;color:var(--mute);margin-top:4px}
+.chain{display:flex;flex-wrap:wrap;gap:8px;margin:1.4rem 0}
+.chain div{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 14px;font-size:.95rem}
+.chain div+div::before{content:"\2192";color:var(--acc);margin-right:10px}
+.chain small{color:var(--mute)}
+figure{margin:0}
+figure img{width:100%;display:block;border-radius:8px;border:1px solid var(--line);cursor:zoom-in;background:var(--card)}
+figcaption{font-size:.9rem;color:var(--mute);margin-top:8px}
+.step{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:center;margin:34px 0}
+.step:nth-of-type(even) figure{order:-1}
+.step .n{font:500 .95rem "Instrument Sans";color:var(--acc);margin-bottom:2px}
+.step figure{max-width:360px;justify-self:center}
+.wide{margin:28px 0}
+.tw{overflow-x:auto;margin:1rem 0 1.6rem;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:520px}
+caption{text-align:left;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--line)}
+caption span{font-weight:400;color:var(--mute)}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-weight:500;color:var(--mute);font-size:.9rem}
+tr:last-child td{border-bottom:0}
+td.e{color:var(--mute)}
+td.p{font-weight:600}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:20px}
+.cols article{border-top:2px solid var(--acc);padding-top:12px}
+.cols article p{font-size:.98rem}
+.team{display:flex;flex-wrap:wrap;gap:34px;margin-top:22px}
+.team figure{width:150px;text-align:center}
+.team .ph{position:relative;width:150px;height:150px;border-radius:50%;overflow:hidden;background:var(--accbg);display:grid;place-items:center;font:500 2.4rem Newsreader,serif;color:var(--acc)}
+.team .ph img{position:absolute;inset:0;height:100%;object-fit:cover;border-radius:0;border:0;cursor:default}
+.team figcaption{font-size:1rem;color:var(--ink);margin-top:10px}
+footer{margin-top:80px;border-top:1px solid var(--line);padding:26px 0 40px;color:var(--mute);font-size:.9rem}
+.lb{position:fixed;inset:0;background:rgba(5,10,15,.88);display:none;place-items:center;z-index:50;padding:24px;cursor:zoom-out}
+.lb.open{display:grid}
+.lb img{max-width:100%;max-height:88vh;border-radius:6px}
+.lb p{color:#cfd8e0;margin:10px auto 0;text-align:center;font-size:.9rem}
+@media (max-width:720px){.step{grid-template-columns:1fr;gap:14px}.step:nth-of-type(even) figure{order:0}section{padding-top:56px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.band i{transition:none}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+<b>Team 8 radio guide</b>
+<a href="#idea">Idea</a><a href="#predict">Prediction</a><a href="#build">Build</a><a href="#measure">Measurements</a><a href="#challenges">Challenges</a><a href="#team">Team</a>
+<span title="Added as we reach them">More milestones soon</span>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+<h1>Milestone 1:<br>the tuner and the detector</h1>
+<p class="lead">A coil and a variable capacitor pick one frequency out of the air. A diode and a capacitor turn that signal into a level we can read. This is how we predicted, built and measured both.</p>
+<div class="scope">
+<canvas id="cv" aria-label="Sine wave whose frequency follows the capacitor setting"></canvas>
+<div class="dial">
+<label for="c">Tuning capacitor</label>
+<input id="c" type="range" min="20" max="280" value="130">
+<div class="read"><b id="f">819</b> <span id="u">kHz</span> <span id="cv2" style="color:var(--mute)">at 130 pF</span></div>
+</div>
+<div class="band" aria-hidden="true"><u id="st"></u><i id="mk"></i></div>
+<div class="ends"><span>557 kHz (280 pF)</span><span>2.09 MHz (20 pF)</span></div>
+<p class="hint">Drag the slider. The tuning frequency of our 291 µH coil changes with the capacitor. The grey tick marks 819 kHz.</p>
+</div>
+</div></header>
+
+<main class="wrap">
+
+<section id="idea">
+<h2>The idea</h2>
+<p>An AM radio receives many stations at once. Two circuits sort them out. The <b>tank circuit</b>, a coil (L) and a capacitor (C), builds its largest voltage at one frequency only. The <b>detector</b>, a diode with a resistor and capacitor, follows the peaks of that signal and drops the fast carrier. For a steady sine the result is a DC level. For a station it is the sound.</p>
+<div class="eq">f₀ = 1 / (2π√(LC))<small>Turning C moves f₀. That is how the dial selects a station.</small></div>
+<div class="chain" aria-label="Test chain">
+<div>Function generator</div><div>Test loop <small>5 turns</small></div><div>Coil + capacitor <small>TP1</small></div><div>Diode 1N60P</div><div>15 kΩ ‖ 3.3 nF <small>TP3</small></div>
+</div>
+<p>We drive the circuit without a wire into the tank: the generator feeds a small loop of 5 turns placed a few centimetres from the coil, on the same axis. The signal reaches the coil through its magnetic field. TP1 is the top of the tank and TP3 is the detector output.</p>
+</section>
+
+<section id="predict">
+<h2>Prediction</h2>
+<p>Before building, we calculated what the circuit should do. Wheeler’s formula gives the inductance of a single-layer coil in microhenries, with n turns, diameter d and length l in millimetres.</p>
+<div class="eq">L ≈ d²n² / (457d + 1016l) = 50² × 75² / (457×50 + 1016×25) ≈ 291 µH<small>75 turns close-wound on a 50 mm pipe, about 25 mm long.</small></div>
+<div class="tw"><table>
+<caption>Table 4. Predictions <span>coil of 75 turns, capacitor 20 pF to 280 pF</span></caption>
+<tr><th>L (µH)</th><th>C for 819 kHz (pF)</th><th>f at 280 pF (kHz)</th><th>f at 20 pF (MHz)</th><th>RC (µs)</th></tr>
+<tr><td class="p">291</td><td class="p">130</td><td class="p">557</td><td class="p">2.09</td><td class="p">49.5</td></tr>
+</table></div>
+<p>The detector’s time constant is RC = 15 kΩ × 3.3 nF ≈ 50 µs. It is long compared with one carrier cycle (about 1.2 µs at 819 kHz), so the output holds the peaks. It is short compared with the sound, so the output still follows the envelope.</p>
+</section>
+
+<section id="build">
+<h2>Build</h2>
+<p class="sub">Four steps, from a roll of wire to a working detector.</p>
+
+<div class="step"><div><div class="n">Step 1</div><h3>Wind the coil</h3>
+<p>We wound 75 turns of 0.3 mm enamelled copper wire side by side on the 50 mm PVC pipe, with no gaps or crossings, and fixed both ends. We scraped 1 cm of enamel off each end until the copper shone, so it would make contact.</p></div>
+<figure><img src="images/06-main-coil.jpg" alt="Copper coil of 75 turns wound on a grey PVC pipe" loading="lazy"><figcaption>The 75-turn coil on the 50 mm pipe.</figcaption></figure></div>
+
+<div class="step"><div><div class="n">Step 2</div><h3>Add the test loop</h3>
+<p>A second winding of 5 turns sits beside the main coil. The function generator drives it, so the signal enters the tank through the magnetic field.</p></div>
+<figure><img src="images/02-coils-test-loop.jpg" alt="PVC pipe with the 5-turn test loop above the main coil" loading="lazy"><figcaption>The 5-turn test loop (top) and the main coil (below).</figcaption></figure></div>
+
+<div class="step"><div><div class="n">Step 3</div><h3>Connect the tuning capacitor</h3>
+<p>The variable capacitor (20 pF to 280 pF) is fixed to the pipe and joined across the coil. Together they form the tank circuit.</p></div>
+<figure><img src="images/03-tuning-capacitor.jpg" alt="Small variable tuning capacitor with four legs" loading="lazy"><figcaption>The variable tuning capacitor.</figcaption></figure></div>
+
+<div class="step"><div><div class="n">Step 4</div><h3>Wire the detector</h3>
+<p>On the breadboard, the 1N60P diode goes from TP1 to TP3 with its band towards TP3. The 15 kΩ resistor and the 3.3 nF capacitor sit side by side from TP3 to ground.</p></div>
+<figure><img src="images/04-detector-breadboard.jpg" alt="Breadboard with a diode, a resistor and a capacitor" loading="lazy"><figcaption>The detector on the breadboard.</figcaption></figure></div>
+</section>
+
+<section id="measure">
+<h2>Measurements</h2>
+<p>We drove the test loop with a function generator and read TP1 on an oscilloscope with a ×10 probe. A ×1 probe adds about 100 pF and would detune the tank. Three measurements follow.</p>
+<ol>
+<li><b>Resonance.</b> At half travel of the capacitor we find the frequency where TP1 peaks (f₀), then repeat at both ends of the travel to find the band.</li>
+<li><b>Bandwidth.</b> At f₀ we find the frequencies below and above it where the amplitude falls to 0.7 of the peak. The quality factor is Q = f₀ / (f_high − f_low).</li>
+<li><b>Detector.</b> At f₀ we record TP1’s peak and TP3’s DC for six source amplitudes.</li>
+</ol>
+<div class="wide"><figure><img src="images/01-bench-setup.jpg" alt="Bench with two oscilloscopes, a function generator, the coil and a breadboard" loading="lazy"><figcaption>The bench: function generator, oscilloscopes, the coil with its test loop, and the detector breadboard.</figcaption></figure></div>
+<div class="wide"><figure><img src="images/05-tp1-scope.jpg" alt="Oscilloscope screen showing a sine wave near 667 kHz" loading="lazy"><figcaption>TP1 on the OWON SDS1102. The scope reads about 667.6 kHz and 742.2 mV peak to peak.</figcaption></figure></div>
+
+<div class="tw"><table id="t5">
+<caption>Table 5. The tank at TP1</caption>
+<tr><th>Band’s low end (kHz)</th><th>Band’s high end (MHz)</th><th>f₀ at half travel (kHz)</th><th>f_low (kHz)</th><th>f_high (kHz)</th><th>Q</th></tr>
+<tr></tr>
+</table></div>
+<div class="tw"><table id="t6">
+<caption>Table 6. The detector at f₀</caption>
+<tr><th>Source amplitude (V)</th><th>TP1 peak (mV)</th><th>TP3 DC (mV)</th></tr>
+</table></div>
+</section>
+
+<section id="challenges">
+<h2>Challenges</h2>
+<p class="sub">What was harder than the manual suggested.</p>
+<div class="cols">
+<article><h3>A high-frequency source</h3><p>The radio band starts near 560 kHz and reaches 2.1 MHz. Finding a function generator that covers kilohertz to megahertz took effort.</p></article>
+<article><h3>Reading the scope</h3><p>The waveform was easy to see on the oscilloscope, but its numbers kept oscillating, so reading a stable value was hard.</p></article>
+<article><h3>A well-formed coil</h3><p>A perfect single-layer coil is hard to wind by hand. The turns tended to move, so we fixed them in place with hot glue.</p></article>
+<article><h3>Knowing the capacitance</h3><p>It was hard to measure the variable capacitor with a multimeter, so we could not easily check that we were working in the required range.</p></article>
+</div>
+</section>
+
+<section id="team">
+<h2>Team 8</h2>
+<div class="team">
+<figure><div class="ph">I<img src="images/team-ibrahim.jpg" alt="Ibrahim Abdelqader Mabrouk" onerror="this.remove()"></div><figcaption>Ibrahim Abdelqader Mabrouk</figcaption></figure>
+<figure><div class="ph">A<img src="images/team-ahmed.jpg" alt="Ahmed Mahmoud Adel" onerror="this.remove()"></div><figcaption>Ahmed Mahmoud Adel</figcaption></figure>
+</div>
+</section>
+</main>
+
+<footer><div class="wrap">ELEG103 Analog and Digital Electronics, Fall 2026. Team 8 radio guide. Milestone 1.</div></footer>
+
+<div class="lb" id="lb" role="dialog" aria-label="Enlarged image"><div><img alt=""><p></p></div></div>
+<script src="data.js"></script>
+<script>
+const L=291.45e-6,$=id=>document.getElementById(id);
+const fOf=c=>1/(2*Math.PI*Math.sqrt(L*c*1e-12))/1e3;
+const lo=fOf(280),hi=fOf(20),pos=f=>(f-lo)/(hi-lo)*100;
+$('st').style.left=pos(819)+'%';
+const cv=$('cv'),x=cv.getContext('2d');let f0=819;
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n);
+function draw(){
+ const r=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*r;cv.height=h*r;x.setTransform(r,0,0,r,0,0);
+ x.clearRect(0,0,w,h);x.strokeStyle=css('--line');x.lineWidth=1;x.beginPath();x.moveTo(0,h/2);x.lineTo(w,h/2);x.stroke();
+ const cyc=3+(f0-lo)/(hi-lo)*17;x.strokeStyle=css('--acc');x.lineWidth=2.2;x.beginPath();
+ for(let i=0;i<=w;i++){const y=h/2-Math.sin(i/w*cyc*2*Math.PI)*h*.36;i?x.lineTo(i,y):x.moveTo(i,y)}x.stroke();
+}
+function upd(){const c=+$('c').value;f0=fOf(c);$('f').textContent=f0>=1e3?(f0/1e3).toFixed(2):Math.round(f0);$('u').textContent=f0>=1e3?'MHz':'kHz';
+ $('cv2').textContent='at '+c+' pF';$('mk').style.left=`calc(${pos(f0)}% - 2px)`;draw()}
+$('c').addEventListener('input',upd);addEventListener('resize',draw);upd();
+// tables from data.js
+const D=window.DATA||{},cell=v=>`<td${v===''||v==null?' class="e"':''}>${v===''||v==null?'—':v}</td>`;
+$('t5').rows[1].innerHTML=(D.table5||[]).concat(['','','','','','']).slice(0,6).map(cell).join('');
+$('t6').insertAdjacentHTML('beforeend',[0,1,2,3,4,5].map(i=>{const r=(D.table6||[])[i]||[];return`<tr><td>${[0.05,0.1,0.2,0.3,0.5,1][i]}</td>${cell(r[0])}${cell(r[1])}</tr>`}).join(''));
+// scroll spy
+const links=[...document.querySelectorAll('nav a')];
+const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle('on',a.hash==='#'+e.target.id))}),{rootMargin:'-30% 0px -60% 0px'});
+document.querySelectorAll('section').forEach(s=>spy.observe(s));
+// lightbox
+const lb=$('lb'),li=lb.querySelector('img'),lc=lb.querySelector('p');
+document.querySelectorAll('main figure img').forEach(i=>i.addEventListener('click',()=>{li.src=i.src;li.alt=i.alt;lc.textContent=i.alt;lb.classList.add('open')}));
+lb.onclick=()=>lb.classList.remove('open');addEventListener('keydown',e=>e.key==='Escape'&&lb.classList.remove('open'));
+</script>
+</body>
+</html>
