@@ -8,7 +8,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 <style>
+.eq .katex-display{margin:0;text-align:left}.eq .katex-display>.katex{text-align:left}.eq .katex{font-size:1.15em}
 :root{--bg:#eef2f5;--card:#f9fbfc;--ink:#14202b;--mute:#566574;--line:#cfd8e0;--acc:#00727f;--accbg:#dceef0;--grid:rgba(20,32,43,.06)}
 @media (prefers-color-scheme:dark){:root{--bg:#0d151d;--card:#131e28;--ink:#e6edf2;--mute:#97a6b3;--line:#27384a;--acc:#4fd1e0;--accbg:#12313a;--grid:rgba(230,237,242,.05)}}
 *{box-sizing:border-box}
@@ -111,8 +115,8 @@ footer{margin-top:80px;border-top:1px solid var(--line);padding:26px 0 40px;colo
 
 <section id="idea">
 <h2>The idea</h2>
-<p>An AM radio receives many stations at once. Two circuits sort them out. The <b>tank circuit</b>, a coil (L) and a capacitor (C), builds its largest voltage at one frequency only. The <b>detector</b>, a diode with a resistor and capacitor, follows the peaks of that signal and drops the fast carrier. For a steady sine the result is a DC level. For a station it is the sound.</p>
-<div class="eq">f₀ = 1 / (2π√(LC))<small>Turning C moves f₀. That is how the dial selects a station.</small></div>
+<p>An AM radio receives many stations at once. Two circuits sort them out. The <b>tank circuit</b>, a coil ($L$) and a capacitor ($C$), builds its largest voltage at one frequency only. The <b>detector</b>, a diode with a resistor and capacitor, follows the peaks of that signal and drops the fast carrier. For a steady sine the result is a DC level. For a station it is the sound.</p>
+<div class="eq">$$f_0 = \frac{1}{2\pi\sqrt{LC}}$$<small>Turning $C$ moves $f_0$. That is how the dial selects a station.</small></div>
 <div class="chain" aria-label="Test chain">
 <div>Function generator</div><div>Test loop <small>5 turns</small></div><div>Coil + capacitor <small>TP1</small></div><div>Diode 1N60P</div><div>15 kΩ ‖ 3.3 nF <small>TP3</small></div>
 </div>
@@ -121,14 +125,14 @@ footer{margin-top:80px;border-top:1px solid var(--line);padding:26px 0 40px;colo
 
 <section id="predict">
 <h2>Prediction</h2>
-<p>Before building, we calculated what the circuit should do. Wheeler’s formula gives the inductance of a single-layer coil in microhenries, with n turns, diameter d and length l in millimetres.</p>
-<div class="eq">L ≈ d²n² / (457d + 1016l) = 50² × 75² / (457×50 + 1016×25) ≈ 291 µH<small>75 turns close-wound on a 50 mm pipe, about 25 mm long.</small></div>
+<p>Before building, we calculated what the circuit should do. Wheeler’s formula gives the inductance of a single-layer coil in microhenries, with $n$ turns, diameter $d$ and length $l$ in millimetres.</p>
+<div class="eq">$$L \approx \frac{d^{2}\,n^{2}}{457\,d + 1016\,l} = \frac{50^{2}\times 75^{2}}{457\times 50 + 1016\times 25} \approx 291\ \mu\text{H}$$<small>75 turns close-wound on a 50 mm pipe, about 25 mm long.</small></div>
 <div class="tw"><table>
 <caption>Table 4. Predictions <span>coil of 75 turns, capacitor 20 pF to 280 pF</span></caption>
-<tr><th>L (µH)</th><th>C for 819 kHz (pF)</th><th>f at 280 pF (kHz)</th><th>f at 20 pF (MHz)</th><th>RC (µs)</th></tr>
+<tr><th>$L$ (µH)</th><th>$C$ for 819 kHz (pF)</th><th>f at 280 pF (kHz)</th><th>f at 20 pF (MHz)</th><th>RC (µs)</th></tr>
 <tr><td class="p">291</td><td class="p">130</td><td class="p">557</td><td class="p">2.09</td><td class="p">49.5</td></tr>
 </table></div>
-<p>The detector’s time constant is RC = 15 kΩ × 3.3 nF ≈ 50 µs. It is long compared with one carrier cycle (about 1.2 µs at 819 kHz), so the output holds the peaks. It is short compared with the sound, so the output still follows the envelope.</p>
+<p>The detector’s time constant is $RC = 15\,\text{k}\Omega \times 3.3\,\text{nF} \approx 50\ \mu\text{s}$. It is long compared with one carrier cycle (about 1.2 µs at 819 kHz), so the output holds the peaks. It is short compared with the sound, so the output still follows the envelope.</p>
 </section>
 
 <section id="build">
@@ -156,20 +160,20 @@ footer{margin-top:80px;border-top:1px solid var(--line);padding:26px 0 40px;colo
 <h2>Measurements</h2>
 <p>We drove the test loop with a function generator and read TP1 on an oscilloscope with a ×10 probe. A ×1 probe adds about 100 pF and would detune the tank. Three measurements follow.</p>
 <ol>
-<li><b>Resonance.</b> At half travel of the capacitor we find the frequency where TP1 peaks (f₀), then repeat at both ends of the travel to find the band.</li>
-<li><b>Bandwidth.</b> At f₀ we find the frequencies below and above it where the amplitude falls to 0.7 of the peak. The quality factor is Q = f₀ / (f_high − f_low).</li>
-<li><b>Detector.</b> At f₀ we record TP1’s peak and TP3’s DC for six source amplitudes.</li>
+<li><b>Resonance.</b> At half travel of the capacitor we find the frequency where TP1 peaks ($f_0$), then repeat at both ends of the travel to find the band.</li>
+<li><b>Bandwidth.</b> At $f_0$ we find the frequencies below and above it where the amplitude falls to 0.7 of the peak. The quality factor is $Q = \dfrac{f_0}{f_{\text{high}} - f_{\text{low}}}$.</li>
+<li><b>Detector.</b> At $f_0$ we record TP1’s peak and TP3’s DC for six source amplitudes.</li>
 </ol>
 <div class="wide"><figure><img src="images/01-bench-setup.jpg" alt="Bench with two oscilloscopes, a function generator, the coil and a breadboard" loading="lazy"><figcaption>The bench: function generator, oscilloscopes, the coil with its test loop, and the detector breadboard.</figcaption></figure></div>
 <div class="wide"><figure><img src="images/05-tp1-scope.jpg" alt="Oscilloscope screen showing a sine wave near 667 kHz" loading="lazy"><figcaption>TP1 on the OWON SDS1102. The scope reads about 667.6 kHz and 742.2 mV peak to peak.</figcaption></figure></div>
 
 <div class="tw"><table id="t5">
 <caption>Table 5. The tank at TP1</caption>
-<tr><th>Band’s low end (kHz)</th><th>Band’s high end (MHz)</th><th>f₀ at half travel (kHz)</th><th>f_low (kHz)</th><th>f_high (kHz)</th><th>Q</th></tr>
+<tr><th>Band’s low end (kHz)</th><th>Band’s high end (MHz)</th><th>$f_0$ at half travel (kHz)</th><th>$f_{\text{low}}$ (kHz)</th><th>$f_{\text{high}}$ (kHz)</th><th>$Q$</th></tr>
 <tr></tr>
 </table></div>
 <div class="tw"><table id="t6">
-<caption>Table 6. The detector at f₀</caption>
+<caption>Table 6. The detector at $f_0$</caption>
 <tr><th>Source amplitude (V)</th><th>TP1 peak (mV)</th><th>TP3 DC (mV)</th></tr>
 </table></div>
 </section>
@@ -222,6 +226,8 @@ $('t6').insertAdjacentHTML('beforeend',[0,1,2,3,4,5].map(i=>{const r=(D.table6||
 const links=[...document.querySelectorAll('nav a')];
 const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle('on',a.hash==='#'+e.target.id))}),{rootMargin:'-30% 0px -60% 0px'});
 document.querySelectorAll('section').forEach(s=>spy.observe(s));
+// math
+addEventListener('load',()=>{if(window.renderMathInElement)renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})});
 // lightbox
 const lb=$('lb'),li=lb.querySelector('img'),lc=lb.querySelector('p');
 document.querySelectorAll('main figure img').forEach(i=>i.addEventListener('click',()=>{li.src=i.src;li.alt=i.alt;lc.textContent=i.alt;lb.classList.add('open')}));
