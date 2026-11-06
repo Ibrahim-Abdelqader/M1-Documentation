@@ -1,6 +1,3 @@
-// Fill in your measurements here. Leave '' for a value you do not have yet:
-// the page shows a dash for it.
-
 window.DATA = {
   // Table 5, in this order:
   // [band low end (kHz), band high end (MHz), f0 at half travel (kHz), f_low (kHz), f_high (kHz), Q]
